@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Ritmos — Plaza Bolívar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:#0f1117;color:#e8eaf0;min-height:100vh;padding:0}
+  .hero{background:linear-gradient(135deg,#1a1f2e 0%,#0f1117 100%);border-bottom:1px solid #1e2435;padding:2rem 1.5rem 1.5rem;text-align:center}
+  .hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e2a1e;border:1px solid #2d4a2d;color:#5cb85c;font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px;margin-bottom:1rem;letter-spacing:0.5px}
+  .hero-badge span{width:7px;height:7px;background:#5cb85c;border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:700;color:#fff;line-height:1.2;margin-bottom:0.4rem}
+  h1 span{color:#5cb85c}
+  .subtitle{font-size:14px;color:#6b7280;margin-bottom:0.5rem}
+  .dist-badge{display:inline-block;background:#1a2a1a;border:1px solid #2d4a2d;color:#5cb85c;font-size:13px;font-weight:600;padding:5px 14px;border-radius:8px;margin-top:0.5rem}
+  .container{max-width:680px;margin:0 auto;padding:1.5rem}
+  .card{background:#1a1f2e;border:1px solid #1e2435;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem}
+  .card-title{font-size:13px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+  .card-title svg{width:16px;height:16px;opacity:0.7}
+  .input-group{margin-bottom:1rem}
+  label{display:block;font-size:13px;color:#9ca3af;margin-bottom:6px;font-weight:500}
+  input[type=number],input[type=text]{width:100%;background:#0f1117;border:1px solid #2a3040;border-radius:10px;padding:12px 14px;font-size:16px;color:#fff;font-family:'Inter',sans-serif;transition:border-color .2s;-webkit-appearance:none}
+  input[type=number]:focus,input[type=text]:focus{outline:none;border-color:#5cb85c;box-shadow:0 0 0 3px rgba(92,184,92,0.1)}
+  input::placeholder{color:#3d4555}
+  .hint{font-size:11px;color:#4b5563;margin-top:4px}
+  .input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .or-divider{text-align:center;font-size:12px;color:#4b5563;margin:0.75rem 0;position:relative}
+  .or-divider::before,.or-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:#1e2435}
+  .or-divider::before{left:0}.or-divider::after{right:0}
+  .btn-calc{width:100%;background:#5cb85c;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;font-family:'Inter',sans-serif;letter-spacing:0.3px}
+  .btn-calc:hover{background:#4cae4c}
+  .btn-calc:active{transform:scale(0.98)}
+  .btn-clear{width:100%;background:transparent;color:#6b7280;border:1px solid #1e2435;border-radius:10px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;margin-top:8px;font-family:'Inter',sans-serif}
+  .btn-clear:hover{background:#1a1f2e;color:#9ca3af}
+  .results{display:none}
+  .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
+  .metric{background:#0f1117;border:1px solid #1e2435;border-radius:12px;padding:1rem;text-align:center}
+  .metric-icon{font-size:20px;margin-bottom:6px}
+  .metric-val{font-size:1.5rem;font-weight:700;color:#fff;line-height:1}
+  .metric-val.green{color:#5cb85c}
+  .metric-label{font-size:11px;color:#6b7280;margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:#6b7280;font-weight:600;padding:8px 10px;border-bottom:1px solid #1e2435;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+  td{padding:10px;border-bottom:1px solid #111827;color:#d1d5db}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(92,184,92,0.04)}
+  .td-main{font-weight:600;color:#fff}
+  .td-dist{color:#9ca3af}
+  .td-time{color:#5cb85c;font-weight:600}
+  .badge-ref{display:inline-block;background:#1a2a1a;color:#5cb85c;font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;border:1px solid #2d4a2d}
+  .error{color:#f87171;font-size:13px;background:#2a1a1a;border:1px solid #4a2a2a;border-radius:8px;padding:10px 12px;margin-top:8px;display:none}
+  .section-sep{height:1px;background:#1e2435;margin:1.25rem 0}
+  .info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #111827;font-size:13px}
+  .info-row:last-child{border-bottom:none}
+  .info-key{color:#6b7280}
+  .info-val{font-weight:600;color:#e8eaf0}
+  .footer{text-align:center;padding:1.5rem;font-size:12px;color:#374151;border-top:1px solid #1e2435;margin-top:1rem}
+  .footer strong{color:#5cb85c}
+  @media(max-width:420px){.input-row{grid-template-columns:1fr}.metrics-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge"><span></span> Carora, Venezuela</div>
+  <h1>🏃 Calculadora de Ritmos<br><span>Plaza Bolívar</span></h1>
+  <p class="subtitle">Calcula tu ritmo, tiempo y equivalencias de vuelta</p>
+  <div class="dist-badge">📍 367.5 m por vuelta</div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Ingresa tus datos
+    </div>
+
+    <div class="input-group">
+      <label>Número de vueltas a la plaza</label>
+      <input type="number" id="vueltas" min="1" max="9999" placeholder="Ej: 20" />
+    </div>
+
+    <p style="font-size:12px;color:#4b5563;text-align:center;margin-bottom:0.75rem">Escribe el tiempo <strong>o</strong> el ritmo — calcula el que falte</p>
+
+    <div class="input-row">
+      <div class="input-group" style="margin-bottom:0">
+        <label>Tiempo total</label>
+        <input type="text" id="tiempo" placeholder="45:00" />
+        <div class="hint">hh:mm:ss o mm:ss</div>
+      </div>
+      <div class="input-group" style="margin-bottom:0">
+        <label>Ritmo (min/km)</label>
+        <input type="text" id="ritmo" placeholder="4:44" />
+        <div class="hint">mm:ss por km</div>
+      </div>
+    </div>
+
+    <div id="err" class="error"></div>
+
+    <div style="margin-top:1.25rem">
+      <button class="btn-calc" onclick="calcular()">Calcular →</button>
+      <button class="btn-clear" onclick="limpiar()">Limpiar</button>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+
+    <div class="card">
+      <div class="card-title">🏅 Resumen de tu entreno</div>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-icon">🔄</div>
+          <div class="metric-val" id="r-vueltas">—</div>
+          <div class="metric-label">Vueltas</div>
+        </div>
+        <div class="metric">
+          <div class="metric-icon">📏</div>
+          <div class="metric-val" id="r-dist">—</div>
+          <div class="metric-label">Kilómetros</div>
+        </div>
+        <div class="metric">
+          <div class="metric-icon">⏱️</div>
+          <div class="metric-val green" id="r-tiempo">—</div>
+          <div class="metric-label">Tiempo total</div>
+        </div>
+        <div class="metric">
+          <div class="metric-icon">⚡</div>
+          <div class="metric-val green" id="r-ritmo">—</div>
+          <div class="metric-label">Ritmo /km</div>
+        </div>
+      </div>
+
+      <div class="section-sep"></div>
+
+      <div class="info-row">
+        <span class="info-key">Tiempo por vuelta (367.5 m)</span>
+        <span class="info-val" id="r-tvuelta">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Velocidad promedio</span>
+        <span class="info-val" id="r-vel">—</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 Índice de referencias a tu ritmo</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Objetivo</th>
+              <th>Distancia</th>
+              <th>Tiempo estimado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-ref"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">Hecho con ❤️ para los corredores de <strong>Carora</strong></div>
+</div>
+
+<script>
+const DIST_VUELTA = 367.5;
+
+function parseTiempo(s){
+  s = s.trim().replace(/[.,]/g,':');
+  const p = s.split(':').map(Number);
+  if(p.some(isNaN)) return null;
+  if(p.length===3) return p[0]*3600+p[1]*60+p[2];
+  if(p.length===2) return p[0]*60+p[1];
+  if(p.length===1) return p[0]*60;
+  return null;
+}
+
+function parseRitmo(s){
+  return parseTiempo(s);
+}
+
+function segsAStr(s){
+  s = Math.round(s);
+  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60;
+  if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  return `${m}:${String(ss).padStart(2,'0')}`;
+}
+
+function ritmoStr(segsKm){
+  const m=Math.floor(segsKm/60), s=Math.round(segsKm%60);
+  return `${m}:${String(s).padStart(2,'0')}/km`;
+}
+
+function showErr(msg){
+  const el=document.getElementById('err');
+  el.textContent=msg; el.style.display='block';
+}
+function hideErr(){document.getElementById('err').style.display='none';}
+
+function calcular(){
+  hideErr();
+  const vStr=document.getElementById('vueltas').value.trim();
+  const tStr=document.getElementById('tiempo').value.trim();
+  const rStr=document.getElementById('ritmo').value.trim();
+
+  const vueltas=parseFloat(vStr);
+  if(!vStr||isNaN(vueltas)||vueltas<=0) return showErr('Escribe el número de vueltas.');
+
+  const distM=vueltas*DIST_VUELTA;
+  const distKm=distM/1000;
+
+  let tiempoSeg=null, ritmoSegKm=null;
+
+  if(tStr&&rStr){
+    tiempoSeg=parseTiempo(tStr);
+    ritmoSegKm=parseRitmo(rStr);
+    if(tiempoSeg===null||ritmoSegKm===null) return showErr('Formato inválido. Usa mm:ss o hh:mm:ss.');
+  } else if(tStr){
+    tiempoSeg=parseTiempo(tStr);
+    if(tiempoSeg===null) return showErr('Tiempo inválido. Ej: 45:00');
+    ritmoSegKm=tiempoSeg/distKm;
+  } else if(rStr){
+    ritmoSegKm=parseRitmo(rStr);
+    if(ritmoSegKm===null) return showErr('Ritmo inválido. Ej: 4:44');
+    tiempoSeg=ritmoSegKm*distKm;
+  } else {
+    return showErr('Ingresa el tiempo total o el ritmo.');
+  }
+
+  const vel=(distKm/(tiempoSeg/3600)).toFixed(2);
+  const tVuelta=tiempoSeg/vueltas;
+
+  document.getElementById('r-vueltas').textContent=vueltas;
+  document.getElementById('r-dist').textContent=distKm.toFixed(2)+' km';
+  document.getElementById('r-tiempo').textContent=segsAStr(tiempoSeg);
+  document.getElementById('r-ritmo').textContent=ritmoStr(ritmoSegKm);
+  document.getElementById('r-tvuelta').textContent=segsAStr(tVuelta)+' / vuelta';
+  document.getElementById('r-vel').textContent=vel+' km/h';
+
+  const vV=(n,km)=>`${(km*1000/DIST_VUELTA).toFixed(1)} vueltas (${km} km)`;
+  const refs=[
+    {label:'1 vuelta',v:1},
+    {label:'5 vueltas',v:5},
+    {label:'10 vueltas',v:10},
+    {label:'15 vueltas',v:15},
+    {label:'20 vueltas',v:20},
+    {label:'25 vueltas',v:25},
+    {label:vV(1,1),v:1000/DIST_VUELTA},
+    {label:vV(3,3),v:3000/DIST_VUELTA},
+    {label:vV(5,5),v:5000/DIST_VUELTA},
+    {label:vV(10,10),v:10000/DIST_VUELTA},
+    {label:vV(15,15),v:15000/DIST_VUELTA},
+    {label:`${(21097/DIST_VUELTA).toFixed(1)} vueltas (Media Maratón)`,v:21097/DIST_VUELTA},
+    {label:`${(42195/DIST_VUELTA).toFixed(1)} vueltas (Maratón)`,v:42195/DIST_VUELTA},
+  ];
+
+  let rows='';
+  refs.forEach(r=>{
+    const d=(r.v*DIST_VUELTA/1000).toFixed(2);
+    const t=segsAStr(ritmoSegKm*d);
+    const isActive=Math.abs(r.v-vueltas)<0.01;
+    rows+=`<tr${isActive?' style="background:rgba(92,184,92,0.07)"':''}>
+      <td class="td-main">${r.label}${isActive?' <span class="badge-ref">tu entreno</span>':''}</td>
+      <td class="td-dist">${d} km</td>
+      <td class="td-time">${t}</td>
+    </tr>`;
+  });
+  document.getElementById('tabla-ref').innerHTML=rows;
+
+  const res=document.getElementById('results');
+  res.style.display='block';
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function limpiar(){
+  ['vueltas','tiempo','ritmo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('results').style.display='none';
+  hideErr();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter')calcular();});
+</script>
+</body>
+</html>
